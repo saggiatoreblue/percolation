@@ -37,7 +37,7 @@ public class PercolationStats {
         return mean - confidenceInterval();
     }
 
-    public double confidenceHigh() {
+    public double confidenceHi() {
         return mean + confidenceInterval();
     }
 
@@ -74,6 +74,6 @@ public class PercolationStats {
         PercolationStats stats = new PercolationStats(N, T);
         StdOut.println("Mean = " + stats.mean);
         StdOut.println("Stddev = " + stats.stddev);
-        StdOut.println("95% Confidence Interval = " + stats.confidenceLo() + ", " + stats.confidenceHigh());
+        StdOut.println("95% Confidence Interval = " + stats.confidenceLo() + ", " + stats.confidenceHi());
     }
 }
