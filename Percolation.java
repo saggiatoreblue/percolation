@@ -12,7 +12,7 @@ public class Percolation {
     private int N;
     private WeightedQuickUnionUF puf;
     private WeightedQuickUnionUF ifuf;
-    private int openSites;
+    private int openSites = 0;
 
     public Percolation(int N) {
         if (N <= 0) {
@@ -31,7 +31,6 @@ public class Percolation {
 
     public void open(int row, int column) {
         validate(row, column);
-
         if (isOpen(row, column)) {
             return;
         }
@@ -39,32 +38,33 @@ public class Percolation {
 
         if (row > 1) {
             if (isOpen(row - 1, column)) {
-                puf.union(convertTo1D(row, column), convertTo1D(row - 1, column));
-                ifuf.union(convertTo1D(row, column), convertTo1D(row - 1, column));
+                puf.union(flatten(row, column), flatten(row - 1, column));
+                ifuf.union(flatten(row, column), flatten(row - 1, column));
             }
         } else {
-            puf.union(0, convertTo1D(row, column));
-            ifuf.union(0, convertTo1D(row, column));
+            puf.union(0, flatten(row, column));
+            ifuf.union(0, flatten(row, column));
         }
 
         if (row < N) {
             if (isOpen(row + 1, column)) {
-                puf.union(convertTo1D(row, column), convertTo1D(row + 1, column));
-                ifuf.union(convertTo1D(row, column), convertTo1D(row + 1, column));
+                puf.union(flatten(row, column), flatten(row + 1, column));
+                ifuf.union(flatten(row, column), flatten(row + 1, column));
             }
         } else {
-            puf.union(lastIdx, convertTo1D(row, column));
+            puf.union(lastIdx, flatten(row, column));
         }
 
         if (column > 1 && isOpen(row, column - 1)) {
-            puf.union(convertTo1D(row, column), convertTo1D(row, column -1));
-            ifuf.union(convertTo1D(row, column), convertTo1D(row, column - 1));
+            puf.union(flatten(row, column), flatten(row, column -1));
+            ifuf.union(flatten(row, column), flatten(row, column - 1));
         }
 
         if (column < N && isOpen(row, column + 1)) {
-            puf.union(convertTo1D(row, column), convertTo1D(row, column + 1));
-            ifuf.union(convertTo1D(row, column), convertTo1D(row, column + 1));
+            puf.union(flatten(row, column), flatten(row, column + 1));
+            ifuf.union(flatten(row, column), flatten(row, column + 1));
         }
+        openSites++;
     }
 
     public boolean isOpen(int row, int column) {
@@ -74,11 +74,15 @@ public class Percolation {
 
     public boolean isFull(int row, int column) {
         validate(row, column);
-        return ifuf.connected(0, convertTo1D(row, column));
+        return ifuf.find(0) == ifuf.find(flatten(row, column));
     }
 
     public boolean percolates() {
-        return puf.connected(0, lastIdx);
+        return puf.find(0) == puf.find(lastIdx);
+    }
+
+    public int numberOfOpenSites() {
+        return openSites;
     }
 
     private void validate(int row, int column) {
@@ -90,25 +94,8 @@ public class Percolation {
         }
     }
 
-    private int convertTo1D(int row, int column) {
+    private int flatten(int row, int column) {
         validate(row, column);
         return (row - 1) * N + column;
-    }
-
-    public static void main(String[] args) {
-        // int N = StdIn.readInt();
-        // Percolation perc = new Percolation(N);
-        // while (!StdIn.isEmpty()) {
-        //     int p = StdIn.readInt();
-        //     int q = StdIn.readInt();
-        //     perc.open(p,q);
-        //     if (perc.percolates()) {
-        //         StdOut.println("System percolates");
-        //     } else {
-        //         StdOut.println("System does not percolate");
-        //     }
-        //     StdOut.println(p + " " + q);
-        // }
-        // StdOut.println("Finished");
     }
 }
